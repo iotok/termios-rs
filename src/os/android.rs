@@ -50,7 +50,7 @@ pub extern "C" fn tcflow(fd: c_int, action: c_int) -> c_int {
 
 #[no_mangle]
 pub extern "C" fn cfmakeraw(termios_p: *mut ::os::target::termios) {
-    let mut s = unsafe { *termios_p };
+    let s = unsafe { &mut *termios_p };
     s.c_iflag &= !(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL|IXON);
     s.c_oflag &= !OPOST;
     s.c_lflag &= !(ECHO|ECHONL|ICANON|ISIG|IEXTEN);
@@ -59,7 +59,7 @@ pub extern "C" fn cfmakeraw(termios_p: *mut ::os::target::termios) {
 }
 
 fn cfgetspeed(termios_p: *const ::os::target::termios) -> ::os::target::speed_t {
-    let s = unsafe { *termios_p };
+    let s = unsafe { & *termios_p };
     (s.c_cflag & CBAUD)
 }
 
@@ -85,7 +85,7 @@ pub extern "C" fn cfsetospeed(termios_p: *mut ::os::target::termios, speed: ::os
 
 #[no_mangle]
 pub extern "C" fn cfsetspeed(termios_p: *mut ::os::target::termios, speed: ::os::target::speed_t) -> c_int {
-    let mut s = unsafe { *termios_p };
+    let s = unsafe { &mut *termios_p };
     s.c_cflag = (s.c_cflag & !CBAUD) | (speed & CBAUD);
     0
 }
